@@ -1,2 +1,2 @@
-@echo off
+@echo of
 python run.py
