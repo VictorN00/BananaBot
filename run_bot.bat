@@ -1,2 +1,2 @@
 @echo off
-python run.py
+python run.p
