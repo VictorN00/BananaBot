@@ -1,4 +1,4 @@
-import discor
+import discord
 import json
 import re
 import random
