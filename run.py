@@ -135,19 +135,6 @@ class BananaClient(discord.Client):
                 return
         await message.channel.send('I am not connected to a voice channel in this server!')
     
-    async def play(self, message, args):
-        del args[0]
-        if len(args) == 0:
-            await message.channel.send('nothing to play')
-            return
-        connections = self.voice_clients
-        for conn in connections:
-            if conn.guild.id == message.author.guild.id:
-                if conn.is_playing():
-                    conn.stop()
-                return
-        await message.channel.send('I am not connected to a voice channel in this server!')
-    
     async def email(self, message, args):
         try:
             if len(args) <= 1:
