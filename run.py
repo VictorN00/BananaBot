@@ -174,11 +174,14 @@ class BananaClient(discord.Client):
             return
         content = message.content[len(PREFIX) + len("box"):] # Discord will remove the space between ~box and the msg
         message_box = ""
+        nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
         for c in content:
             if ord(c) >= 65 and ord(c) <= 90:
-                message_box += ":regional_indicator_" + chr(ord(c) + 32) + ":"
+                message_box += ":regional_indicator_{}:".format(chr(ord(c) + 32))
             elif ord(c) >= 97 and ord(c) <= 122:
-                message_box += ":regional_indicator_" + c + ":"
+                message_box += ":regional_indicator_{}:".format(c)
+            elif ord(c) >= 48 and ord(c) <= 57:
+                message_box += ":{}:".format(nums[ord(c) - 48])
             else:
                 message_box += c
         await message.delete()
