@@ -1,6 +1,7 @@
 import discord
 import json
 import re
+import random
 import youtube_dl
 import smtplib 
 from email.mime.text import MIMEText
@@ -30,8 +31,12 @@ class BananaClient(discord.Client):
         if len(content) > 0 and content[0] == PREFIX:
             content = content[1:]
             args = re.split(" +", content)
-            if args[0] == 'rogersiq':
+            if args[0] == 'help':
+                await self.help(message)
+            elif args[0] == 'rogersiq':
                 await self.rogersiq(message)
+            elif args[0] == 'iq':
+                await self.iq(message)
             elif args[0] == 'bsay':
                 await self.bsay(message, args)
             elif args[0] == 'gs':
@@ -46,22 +51,30 @@ class BananaClient(discord.Client):
                 await self.leave(message)
             elif args[0] == 'email':
                 await self.email(message, args)
+            elif args[0] == 'box':
+                await self.box(message)
         else:
             await self.react(message)
     
     async def on_message_edit(self, message_old, message_new):
         await self.on_message(message_new)
+        
+    async def help(self, message):
+        await message.channel.send("help")
             
     async def rogersiq(self, message):
         await message.channel.send('Roger has 2000 IQ')
+        
+    async def iq(self, message):
+        await message.channel.send("<@!{}>, you have {} IQ.".format(message.author.id, random.randrange(0, 301)))
     
     async def bsay(self, message, args):
         del args[0]
+        await message.delete()
         if len(args) == 0:
             await message.channel.send('nothing to say')
         else:
             await message.channel.send(message.content[len('bsay ') + len(PREFIX):])
-        await message.delete()
     
     async def gs(self, message, args):
         del args[0]
@@ -125,7 +138,7 @@ class BananaClient(discord.Client):
     async def play(self, message, args):
         del args[0]
         if len(args) == 0:
-            message.channel.send('nothing to play')
+            await message.channel.send('nothing to play')
             return
         connections = self.voice_clients
         for conn in connections:
@@ -133,7 +146,7 @@ class BananaClient(discord.Client):
                 if conn.is_playing():
                     conn.stop()
                 return
-        message.channel.send('I am not connected to a voice channel in this server!')
+        await message.channel.send('I am not connected to a voice channel in this server!')
     
     async def email(self, message, args):
         try:
@@ -166,7 +179,23 @@ class BananaClient(discord.Client):
             
             await message.channel.send('email sent')
         except:
-            await message.channel.send('something went wrong')                    
+            await message.channel.send('something went wrong')
+    
+    async def box(self, message):
+        if message.content == "~box":
+            await message.channel.send('nothing to box')
+            return
+        content = message.content[len(PREFIX) + len("box"):] # Discord will remove the space between ~box and the msg
+        message_box = ""
+        for c in content:
+            if ord(c) >= 65 and ord(c) <= 90:
+                message_box += ":regional_indicator_" + chr(ord(c) + 32) + ":"
+            elif ord(c) >= 97 and ord(c) <= 122:
+                message_box += ":regional_indicator_" + c + ":"
+            else:
+                message_box += c
+        await message.delete()
+        await message.channel.send(message_box)
     
     async def react(self, message):
         content = message.content.lower()
