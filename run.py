@@ -2,10 +2,11 @@ import discord
 import json
 import re
 import random
-import youtube_dl
+import glob
 import smtplib 
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from google_images_search import GoogleImagesSearch
 
 CREDENTIALS_FILE = open('credentials.json', 'r')
 CREDENTIALS_JSON = json.loads(CREDENTIALS_FILE.read())
@@ -16,6 +17,8 @@ BOT_ID = CREDENTIALS_JSON['bot_id']
 OWNER_ID = CREDENTIALS_JSON['owner_id']
 BOT_EMAIL = CREDENTIALS_JSON['bot_email']
 BOT_EMAIL_PASSWORD = CREDENTIALS_JSON['bot_email_password']
+API_KEY = CREDENTIALS_JSON['api_key']
+CSE_CX = CREDENTIALS_JSON['cse_cx']
 
 CREDENTIALS_FILE.close()
 
@@ -29,43 +32,32 @@ class BananaClient(discord.Client):
             return
         content = message.content
         if len(content) > 0 and content[0] == PREFIX:
-            content = content[1:]
+            content = content[len(PREFIX):]
             args = re.split(" +", content)
-            if args[0] == 'help':
-                await self.help(message)
-            elif args[0] == 'rogersiq':
-                await self.rogersiq(message)
-            elif args[0] == 'iq':
-                await self.iq(message)
-            elif args[0] == 'bsay':
-                await self.bsay(message, args)
-            elif args[0] == 'gs':
-                await self.gs(message, args)
-            elif args[0] == 'gis':
-                await self.gis(message, args)
-            elif args[0] == 'ys':
-                await self.ys(message, args)
-            elif args[0] == 'join':
-                await self.join(message)
-            elif args[0] == 'leave':
-                await self.leave(message)
-            elif args[0] == 'email':
-                await self.email(message, args)
-            elif args[0] == 'box':
-                await self.box(message)
+            noexec = ["on_ready", "on_message", "on_message_edit", "react"]
+            if args[0] in noexec:
+                return
+            convert = {"8ball" : "eightball"}
+            cmd_name = convert.get(args[0], args[0])
+            command = getattr(self, cmd_name, None)
+            if command != None:
+                await command(message, args)
         else:
             await self.react(message)
     
     async def on_message_edit(self, message_old, message_new):
         await self.on_message(message_new)
-        
-    async def help(self, message):
+    
+    async def test(self, message, args):
+        await message.channel.send("<:michaelreeves:731317531079475291>")
+    
+    async def help(self, message, args):
         await message.channel.send("help")
             
-    async def rogersiq(self, message):
+    async def rogersiq(self, message, args):
         await message.channel.send('Roger has 2000 IQ')
         
-    async def iq(self, message):
+    async def iq(self, message, args):
         await message.channel.send("<@!{}>, you have {} IQ.".format(message.author.id, random.randrange(0, 301)))
     
     async def bsay(self, message, args):
@@ -84,12 +76,27 @@ class BananaClient(discord.Client):
             await message.channel.send('https://www.google.com/search?q=' + '+'.join(args))
     
     async def gis(self, message, args):
+        """
+        try:
+            del args[0]
+            if len(args) == 0:
+                await message.channel.send('no text to search')
+                return
+            gis = GoogleImagesSearch(API_KEY, CSE_CX)
+            gis.search({'q': ' '.join(args), 'num': 20})
+            for image in gis.results():
+                # image.download('./')
+                await message.channel.send(image.url)
+                # print(image.url)
+        except:
+            await message.channel.send('something went wrong')
+        """
         del args[0]
         if len(args) == 0:
             await message.channel.send('no text to search')
         else:
             await message.channel.send('https://www.google.com/search?q=' + '+'.join(args) + '&tbm=isch')
-    
+            
     async def ys(self, message, args):
         del args[0]
         if len(args) == 0:
@@ -97,11 +104,10 @@ class BananaClient(discord.Client):
         else:
             await message.channel.send("https://www.youtube.com/results?search_query=" + '+'.join(args))
     
-    async def join(self, message):
+    async def join(self, message, args):
         #if message.author.id != OWNER_ID:
          #   return
-        voice = message.author.voice
-        if voice == None:
+        if message.author.voice == None:
             await message.channel.send('You are not connected a voice channel in this server!')
             return
         channel = message.author.voice.channel
@@ -120,7 +126,7 @@ class BananaClient(discord.Client):
         conn = await channel.connect()
         conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="Windows Logon.wav"))
     
-    async def leave(self, message):
+    async def leave(self, message, args):
         #if message.author.id != OWNER_ID:
          #   return
         connections = self.voice_clients
@@ -167,8 +173,9 @@ class BananaClient(discord.Client):
             await message.channel.send('email sent')
         except:
             await message.channel.send('something went wrong')
+            # raise
     
-    async def box(self, message):
+    async def box(self, message, args):
         if message.content == "~box":
             await message.channel.send('nothing to box')
             return
@@ -186,6 +193,35 @@ class BananaClient(discord.Client):
                 message_box += c
         await message.delete()
         await message.channel.send(message_box)
+        
+    async def mra(self, message, args):
+        files = glob.glob(".\\mra\\*")
+        index = random.randrange(0, len(files))
+        await message.channel.send(file=discord.File(files[index]))
+    
+    async def banana(self, message, args):
+        files = glob.glob(".\\banana\\*")
+        index = random.randrange(0, len(files))
+        await message.channel.send(file=discord.File(files[index]))
+        
+    async def eightball(self, message, args):
+        if message.content == "~8ball":
+            await message.channel.send("pls ask a question")
+            return
+        answers = []
+        with open(".\\8ball\\8ball_responses.txt", "r") as file:
+            for line in file:
+                answers.append(line.strip())
+        response = answers[random.randrange(len(answers))]
+        await message.channel.send(":8ball: **Question:** {}\n**Answer:** {}".format(message.content[len("~8ball "):], response))
+        
+    async def pfp(self, message, args):
+        mentions = message.mentions
+        if len(mentions) == 0:
+            await message.channel.send("give me mention")
+            return
+        for ment in mentions:
+            await message.channel.send(ment.avatar_url)
     
     async def react(self, message):
         content = message.content.lower()
