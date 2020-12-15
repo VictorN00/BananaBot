@@ -232,6 +232,8 @@ class BananaClient(discord.Client):
                 await message.add_reaction('👌')
             if "bread" in content:
                 await message.add_reaction('🍞')
+            if "loaf" in content:
+                await message.add_reaction('🥖')
             if re.compile('.*\\bmo{2,}\\b.*').match(content) != None:
                 await message.add_reaction('<:moo2:713848866213986356>')
             if re.compile('.*y+u+h+.*').match(content) != None:
