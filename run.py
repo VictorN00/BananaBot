@@ -7,6 +7,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from google_images_search import GoogleImagesSearch
+from itertools import permutations
 
 CREDENTIALS_FILE = open('credentials.json', 'r')
 CREDENTIALS_JSON = json.loads(CREDENTIALS_FILE.read())
@@ -232,8 +233,10 @@ class BananaClient(discord.Client):
                 await message.add_reaction('👌')
             if "bread" in content:
                 await message.add_reaction('🍞')
-            if "loaf" in content:
-                await message.add_reaction('🥖')
+            loaf_perms = [''.join(p) for p in permutations('loaf')]
+            for loaf in loaf_perms:
+                if loaf in content:
+                    await message.add_reaction('🥖')
             if re.compile('.*\\bmo{2,}\\b.*').match(content) != None:
                 await message.add_reaction('<:moo2:713848866213986356>')
             if re.compile('.*y+u+h+.*').match(content) != None:
