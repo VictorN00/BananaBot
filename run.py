@@ -24,6 +24,8 @@ CSE_CX = CREDENTIALS_JSON['cse_cx']
 CREDENTIALS_FILE.close()
 
 class BananaClient(discord.Client):
+    loaf_perms = [''.join(p) for p in permutations('loaf')]
+    
     async def on_ready(self):
         print('Logged on as', self.user)
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="banana"))
@@ -233,8 +235,7 @@ class BananaClient(discord.Client):
                 await message.add_reaction('👌')
             if "bread" in content:
                 await message.add_reaction('🍞')
-            loaf_perms = [''.join(p) for p in permutations('loaf')]
-            for loaf in loaf_perms:
+            for loaf in self.loaf_perms:
                 if loaf in content:
                     await message.add_reaction('🥖')
             if re.compile('.*\\bmo{2,}\\b.*').match(content) != None:
