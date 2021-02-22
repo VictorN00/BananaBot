@@ -44,7 +44,7 @@ class BananaClient(discord.Client):
             cmd_name = convert.get(args[0], args[0])
             command = getattr(self, cmd_name, None)
             if command != None:
-                await command(message, args)
+                await command(message=message, args=args)
         else:
             await self.react(message)
     
@@ -124,12 +124,12 @@ class BananaClient(discord.Client):
                     conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="Windows Logon.wav"))
                     return
                 else:
-                    await self.leave(message)
+                    await self.leave(message, args)
                     break
         conn = await channel.connect()
         conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="Windows Logon.wav"))
     
-    async def leave(self, message, args):
+    async def leave(self, message, args, play=True):
         #if message.author.id != OWNER_ID:
          #   return
         connections = self.voice_clients
@@ -137,9 +137,10 @@ class BananaClient(discord.Client):
             if conn.guild.id == message.author.guild.id:
                 if conn.is_playing():
                     conn.stop()
-                conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="Windows Shutdown.wav"))
-                while conn.is_playing():
-                    pass
+                if play:
+                    conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="Windows Shutdown.wav"))
+                    while conn.is_playing():
+                        pass
                 await conn.disconnect()
                 return
         await message.channel.send('I am not connected to a voice channel in this server!')
@@ -224,7 +225,40 @@ class BananaClient(discord.Client):
             await message.channel.send("give me mention")
             return
         for ment in mentions:
-            await message.channel.send(ment.avatar_url)
+            embed = discord.Embed(
+              title = ment.nick,
+              #description = 'hello',
+              color = 0xF0E800
+            )
+            embed.set_image(url=ment.avatar_url)
+            await message.channel.send(embed=embed)
+            
+    async def bruh(self, message, args):
+        #if message.author.id != OWNER_ID:
+            #   return
+        if message.author.voice == None:
+            await message.channel.send('You are not connected a voice channel in this server!')
+            return
+        channel = message.author.voice.channel
+        connections = self.voice_clients
+        existing = False
+        for conn in connections:
+            if conn.guild.id == message.author.guild.id:
+                if conn.channel.id == channel.id:
+                    # await message.channel.send('I am already in this voice channel!')
+                    if conn.is_playing():
+                        conn.stop()
+                    existing = True
+                else:
+                    await self.leave(message, args)
+                    break
+        if not existing:
+            conn = await channel.connect()
+        conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="bruh.mp3"))
+        while conn.is_playing():
+            pass
+        await self.leave(message, args, False)
+        
     
     async def react(self, message):
         content = message.content.lower()
