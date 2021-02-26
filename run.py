@@ -226,7 +226,7 @@ class BananaClient(discord.Client):
             return
         for ment in mentions:
             embed = discord.Embed(
-              title = ment.nick,
+              title = ment.nick if not ment.nick == None else ment.name,
               #description = 'hello',
               color = 0xF0E800
             )
