@@ -16,8 +16,8 @@ CREDENTIALS_JSON = json.loads(CREDENTIALS_FILE.read())
 
 PREFIX = CREDENTIALS_JSON['prefix']
 TOKEN = CREDENTIALS_JSON['token']
-BOT_ID = CREDENTIALS_JSON['bot_id']
-OWNER_ID = CREDENTIALS_JSON['owner_id']
+BOT_ID = int(CREDENTIALS_JSON['bot_id'])
+OWNER_ID = int(CREDENTIALS_JSON['owner_id'])
 BOT_EMAIL = CREDENTIALS_JSON['bot_email']
 BOT_EMAIL_PASSWORD = CREDENTIALS_JSON['bot_email_password']
 API_KEY = CREDENTIALS_JSON['api_key']
@@ -272,7 +272,9 @@ class BananaClient(discord.Client):
             pass
         """
         await self.leave(message, args, False)
-        
+    
+    async def dm(self, message, args):
+        pass
     
     async def react(self, message):
         content = message.content.lower()
