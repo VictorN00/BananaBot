@@ -2,6 +2,7 @@ import discord
 import json
 import re
 import random
+import shlex
 import glob
 import smtplib 
 from email.mime.text import MIMEText
@@ -36,7 +37,8 @@ class BananaClient(discord.Client):
         content = message.content
         if len(content) > 0 and content[0] == PREFIX:
             content = content[len(PREFIX):]
-            args = re.split(" +", content)
+            # args = re.split(" +", content)
+            args = shlex.split(content)
             noexec = ["on_ready", "on_message", "on_message_edit", "react"]
             if args[0] in noexec:
                 return
@@ -147,6 +149,7 @@ class BananaClient(discord.Client):
     
     async def email(self, message, args):
         try:
+            # args = shlex.split(message.content)
             if len(args) <= 1:
                 await message.channel.send('too little arguments')
                 return
@@ -155,7 +158,11 @@ class BananaClient(discord.Client):
             subject = None
             if args[2].startswith('subject='):
                 subject = args[2][len('subject='):]
-            body = content[content.find(' ', content.find('subject=') if content.find('subject=') != -1 else content.find(' ') + 1) + 1:]
+                body = content[content.find('subject=') + len(args[2]) + 2 + 1:] # the plus one is for the space
+            else:
+                body = content[content.find(args[1]) + len(args[1]) + 1:] # plus one for same reason ^^^
+            # body = content[content.find(' ', content.find('subject=') if content.find('subject=') != -1 else content.find(' ') + 1) + 1:]
+            # print(body)
             
             smtp = "smtp.gmail.com" 
             port = 587
