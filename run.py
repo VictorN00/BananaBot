@@ -4,7 +4,8 @@ import re
 import random
 import shlex
 import glob
-import smtplib 
+import smtplib
+import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from google_images_search import GoogleImagesSearch
@@ -141,8 +142,11 @@ class BananaClient(discord.Client):
                     conn.stop()
                 if play:
                     conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="Windows Shutdown.wav"))
+                    time.sleep(2.5)
+                    """
                     while conn.is_playing():
                         pass
+                    """
                 await conn.disconnect()
                 return
         await message.channel.send('I am not connected to a voice channel in this server!')
