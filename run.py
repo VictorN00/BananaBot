@@ -266,8 +266,11 @@ class BananaClient(discord.Client):
         if not existing:
             conn = await channel.connect()
         conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="bruh.mp3"))
+        time.sleep(1)
+        """
         while conn.is_playing():
             pass
+        """
         await self.leave(message, args, False)
         
     
