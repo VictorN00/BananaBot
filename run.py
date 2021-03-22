@@ -142,7 +142,7 @@ class BananaClient(discord.Client):
                     conn.stop()
                 if play:
                     conn.play(discord.FFmpegPCMAudio(executable="C:/ffmpeg/bin/ffmpeg.exe", source="Windows Shutdown.wav"))
-                    time.sleep(2.5)
+                    time.sleep(2.25)
                     """
                     while conn.is_playing():
                         pass
@@ -162,9 +162,11 @@ class BananaClient(discord.Client):
             subject = None
             if args[2].startswith('subject='):
                 subject = args[2][len('subject='):]
-                body = content[content.find('subject=') + len(args[2]) + 2 + 1:] # the plus one is for the space
+                # body = content[content.find('subject=') + len(args[2]) + 2 + 1:] # the plus one is for the space
+                body = ' '.join(args[3:])
             else:
-                body = content[content.find(args[1]) + len(args[1]) + 1:] # plus one for same reason ^^^
+                # body = content[content.find(args[1]) + len(args[1]) + 1:] # plus one for same reason ^^^
+                body = ' '.join(args[2:])
             # body = content[content.find(' ', content.find('subject=') if content.find('subject=') != -1 else content.find(' ') + 1) + 1:]
             # print(body)
             
