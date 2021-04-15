@@ -274,9 +274,14 @@ class BananaClient(discord.Client):
             pass
         """
         await self.leave(message, args, False)
-    
+        
+    """
     async def dm(self, message, args):
         pass
+    """
+    
+    async def pray(self, message, args):
+        await message.channel.send(':pray: :orangutan:')
     
     async def react(self, message):
         content = message.content.lower()
