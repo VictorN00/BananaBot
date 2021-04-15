@@ -288,11 +288,17 @@ class BananaClient(discord.Client):
             if not num.isnumeric():
                 await message.channel.send('not valid positive integer. bad.')
             num = int(num)
-            if num > 100:
+            if num > 75:
                 await message.channel.send('too much pray')
             elif num == 0:
                 await message.channel.send('too little pray')
             else:
+                """
+                pray = ''
+                for i in range(num):
+                    pray += ':pray: :orangutan:\n'
+                await message.channel.send(pray.strip())
+                """
                 for i in range(num):
                     await message.channel.send(':pray: :orangutan:')
     
