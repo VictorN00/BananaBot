@@ -281,7 +281,20 @@ class BananaClient(discord.Client):
     """
     
     async def pray(self, message, args):
-        await message.channel.send(':pray: :orangutan:')
+        if len(args) == 1:
+            await message.channel.send(':pray: :orangutan:')
+        else:
+            num = args[1]
+            if not num.isnumeric():
+                await message.channel.send('not valid positive integer. bad.')
+            num = int(num)
+            if num > 100:
+                await message.channel.send('too much pray')
+            elif num == 0:
+                await message.channel.send('too little pray')
+            else:
+                for i in range(num):
+                    await message.channel.send(':pray: :orangutan:')
     
     async def react(self, message):
         content = message.content.lower()
