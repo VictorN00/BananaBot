@@ -286,7 +286,7 @@ class BananaClient(discord.Client):
         else:
             num = args[1]
             if not num.isnumeric():
-                await message.channel.send('not valid positive integer. bad.')
+                await message.channel.send('not a non-negative integer. bad.')
             num = int(num)
             if num > 75:
                 await message.channel.send('too much pray')
